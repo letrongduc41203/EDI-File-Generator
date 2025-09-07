@@ -17,6 +17,6 @@ Công nghệ sử dụng:
 
 ## Screenshots
 
-![UI](img/localhost_3000_orders.html.png)
-![UI](img/localhost_3000_orders.html%20(2).png)
-![UI](img/localhost_3000_orders.html%20(3).png)
+![UI](/Img/localhost_3000_orders.html.png)
+![UI](/Img/localhost_3000_orders.html%20(2).png)
+![UI](/Img/localhost_3000_orders.html%20(3).png)
