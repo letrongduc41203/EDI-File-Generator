@@ -1,7 +1,7 @@
-#  EDI File Generator (Mini Project)
+#  EDI File Generator
 
 ## Giới thiệu
-Dự án nhỏ mô phỏng cách **tạo file EDI (XML)** từ dữ liệu **Order** và lưu log vào hệ thống.  
+Dự án nhỏ mô phỏng cách **tạo file EDI (XML/EDIFACT)** từ dữ liệu **Order** và lưu log vào hệ thống.  
 Phù hợp để minh họa quy trình **EDI trong doanh nghiệp / hải quan / logistics** ở mức cơ bản.
 
 Công nghệ sử dụng:
@@ -11,7 +11,7 @@ Công nghệ sử dụng:
 
 ## Tính năng
 - Tạo **Order**
-- Nhấn nút **"Xuất EDI"** → sinh file XML vào thư mục `wwwroot/edi/sent/`
+- Nhấn nút **"Xuất EDI"** → sinh file XML/EDIFACT vào thư mục `wwwroot/edi/sent/`
 - Lưu log vào bảng `EdiTransactions`
 - Xem danh sách **Orders** và trạng thái gửi.  
 
