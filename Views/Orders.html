@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDI File Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-8">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-white text-xl font-bold">EDI File Generator</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Orders Management</h2>
+            
+            <!-- Form tạo Order mới -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Create New Order</h3>
+                <form id="order-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Order No *</label>
+                        <input type="text" id="order-no" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ORD001" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer *</label>
+                        <input type="text" id="customer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Customer Name" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Port *</label>
+                        <select id="port" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Select port</option>
+                            <option value="VNHPH">Hải Phòng</option>
+                            <option value="VNSGN">TP.HCM</option>
+                            <option value="VNDAD">Đà Nẵng</option>
+                            <option value="VNQNI">Quảng Ninh</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ETA (Estimated Time of Arrival)</label>
+                        <input type="datetime-local" id="eta" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Vessel</label>
+                        <input type="text" id="vessel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MSC MAYA">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Voyage</label>
+                        <input type="text" id="voyage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="2024-001">
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                        <textarea id="remarks" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2" placeholder="Note"></textarea>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">
+                            Create Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table danh sách Orders -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-700">Orders List</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Port</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Containers</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table" class="bg-white divide-y divide-gray-200">
+                            <!-- Orders sẽ được load bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Management Modal -->
+    <div id="container-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900" id="container-modal-title">Quản lý Containers</h3>
+                    <button onclick="closeContainerModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Add Container Form -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-3">Thêm Container</h4>
+                    <form id="container-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Container No *</label>
+                            <input type="text" id="container-no" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MSKU1234567" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Seal No</label>
+                            <input type="text" id="seal-no" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="SL123456">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                            <input type="number" id="weight" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="25000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cargo Type</label>
+                            <select id="cargo-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Chọn loại hàng</option>
+                                <option value="DRY">Dry Cargo</option>
+                                <option value="REEFER">Reefer</option>
+                                <option value="TANK">Tank</option>
+                                <option value="OOG">Out of Gauge</option>
+                                <option value="HAZMAT">Hazardous Materials</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-4">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                Thêm Container
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Container List -->
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-3">Container List</h4>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Container No</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Seal No</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Weight</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cargo Type</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="containers-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Containers will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-containers" class="text-center py-8 text-gray-500 hidden">
+                        No containers added
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex justify-between">
+                    <button onclick="closeContainerModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                        Close
+                    </button>
+                    <button onclick="generateEDI()" id="generate-edi-btn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400" disabled>
+                        Generate EDI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDI Preview Modal -->
+    <div id="edi-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">EDI Message Preview</h3>
+                    <button onclick="closeEDIModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">EDI Format:</label>
+                    <select id="edi-format" class="px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="XML">XML</option>
+                        <option value="EDIFACT">EDIFACT</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">EDI Content:</label>
+                    <textarea id="edi-content" class="w-full h-64 px-3 py-2 border border-gray-300 rounded-md font-mono text-sm" readonly></textarea>
+                </div>
+
+                <div class="flex justify-between">
+                    <button onclick="closeEDIModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                        Đóng
+                    </button>
+                    <button onclick="sendEDI()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                        Gửi Hải quan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-5">Thành công!</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500" id="modal-message">Thao tác đã được thực hiện thành công!</p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button onclick="closeSuccessModal()" class="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-600">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State and API helpers
+        let orders = [];
+        let containers = []; // containers for current order only
+        let currentOrderId = null;
+
+        const API_BASE = '';
+
+        const ORDER_STATUS = {
+            DRAFT: 'Draft',
+            READY_FOR_EDI: 'Ready for EDI',
+            EDI_GENERATED: 'EDI Generated',
+            SENT_TO_CUSTOMS: 'Sent to Customs',
+            COMPLETED: 'Completed'
+        };
+
+        function getStatusBadge(status) {
+            const badges = {
+                'Draft': 'bg-gray-100 text-gray-800',
+                'Ready for EDI': 'bg-blue-100 text-blue-800',
+                'EDI Generated': 'bg-yellow-100 text-yellow-800',
+                'Sent to Customs': 'bg-purple-100 text-purple-800',
+                'Completed': 'bg-green-100 text-green-800'
+            };
+            return `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${badges[status] || 'bg-gray-100 text-gray-800'}">${status}</span>`;
+        }
+
+        async function fetchOrders() {
+            const res = await fetch(`${API_BASE}/api/orders`);
+            if (!res.ok) throw new Error('Failed to load orders');
+            orders = await res.json();
+            updateOrdersTable();
+        }
+
+        async function fetchContainers(orderId) {
+            const res = await fetch(`${API_BASE}/api/containers?orderId=${encodeURIComponent(orderId)}`);
+            if (!res.ok) throw new Error('Failed to load containers');
+            containers = await res.json();
+            updateContainersTable();
+            updateGenerateEDIButton();
+        }
+
+        function updateOrdersTable() {
+            const tableBody = document.getElementById('orders-table');
+            tableBody.innerHTML = '';
+            orders.forEach(order => {
+                const containerCount = typeof order.containerCount === 'number' ? order.containerCount : 0;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${order.orderNo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.customer}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.port}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.eta ? new Date(order.eta).toLocaleString('vi-VN') : '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${containerCount} container${containerCount !== 1 ? 's' : ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(order.status)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button onclick="manageContainers(${order.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                            Containers
+                        </button>
+                        <button onclick="deleteOrder(${order.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">
+                            Xóa
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function addOrder(event) {
+            event.preventDefault();
+            const payload = {
+                orderNo: document.getElementById('order-no').value.trim(),
+                customer: document.getElementById('customer').value.trim(),
+                port: document.getElementById('port').value,
+                eta: document.getElementById('eta').value || null,
+                vessel: document.getElementById('vessel').value || null,
+                voyage: document.getElementById('voyage').value || null,
+                remarks: document.getElementById('remarks').value || null,
+            };
+            const res = await fetch(`${API_BASE}/api/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.status === 409) {
+                alert('Order No đã tồn tại! Vui lòng sử dụng mã khác.');
+                return;
+            }
+            if (!res.ok) {
+                alert('Tạo Order thất bại');
+                return;
+            }
+            document.getElementById('order-form').reset();
+            await fetchOrders();
+            showSuccessModal('Order đã được tạo thành công! Hãy thêm containers cho order này.');
+        }
+
+        async function manageContainers(orderId) {
+            currentOrderId = orderId;
+            const order = orders.find(o => o.id === orderId);
+            document.getElementById('container-modal-title').textContent = `Quản lý Containers - ${order.orderNo}`;
+            document.getElementById('container-modal').classList.remove('hidden');
+            await fetchContainers(orderId);
+        }
+
+        function closeContainerModal() {
+            document.getElementById('container-modal').classList.add('hidden');
+            // Keep currentOrderId for EDI modal actions
+            containers = [];
+            document.getElementById('container-form').reset();
+        }
+
+        async function addContainer(event) {
+            event.preventDefault();
+            if (!currentOrderId) return;
+            const payload = {
+                orderId: currentOrderId,
+                containerNo: document.getElementById('container-no').value.trim(),
+                sealNo: document.getElementById('seal-no').value || null,
+                weight: document.getElementById('weight').value ? parseInt(document.getElementById('weight').value, 10) : null,
+                cargoType: document.getElementById('cargo-type').value || null,
+            };
+            const res = await fetch(`${API_BASE}/api/containers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.status === 409) {
+                alert('Container No đã tồn tại trong order này!');
+                return;
+            }
+            if (!res.ok) {
+                alert('Thêm Container thất bại');
+                return;
+            }
+            document.getElementById('container-form').reset();
+            await fetchContainers(currentOrderId);
+            await fetchOrders();
+            showSuccessModal('Container đã được thêm thành công!');
+        }
+
+        function updateContainersTable() {
+            const tableBody = document.getElementById('containers-table');
+            const noContainers = document.getElementById('no-containers');
+            if (!containers || containers.length === 0) {
+                tableBody.innerHTML = '';
+                noContainers.classList.remove('hidden');
+                return;
+            }
+            noContainers.classList.add('hidden');
+            tableBody.innerHTML = '';
+            containers.forEach(container => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-2 text-sm text-gray-900">${container.containerNo}</td>
+                    <td class="px-4 py-2 text-sm text-gray-500">${container.sealNo || '-'}</td>
+                    <td class="px-4 py-2 text-sm text-gray-500">${container.weight ? container.weight.toLocaleString() + ' kg' : '-'}</td>
+                    <td class="px-4 py-2 text-sm text-gray-500">${container.cargoType || '-'}</td>
+                    <td class="px-4 py-2 text-sm font-medium">
+                        <button onclick="deleteContainer(${container.id})" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors">
+                            Xóa
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteContainer(containerId) {
+            if (!confirm('Xác nhận xóa container này?')) return;
+            const res = await fetch(`${API_BASE}/api/containers/${containerId}`, { method: 'DELETE' });
+            if (!res.ok) {
+                alert('Xóa container thất bại');
+                return;
+            }
+            await fetchContainers(currentOrderId);
+            await fetchOrders();
+            showSuccessModal('Container đã được xóa thành công!');
+        }
+
+        function updateGenerateEDIButton() {
+            const btn = document.getElementById('generate-edi-btn');
+            btn.disabled = !containers || containers.length === 0;
+        }
+
+        async function patchOrderStatus(orderId, status) {
+            await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+        }
+
+        async function generateEDI() {
+            const order = orders.find(o => o.id === currentOrderId);
+            if (!order) return;
+            await patchOrderStatus(order.id, ORDER_STATUS.EDI_GENERATED);
+            const orderContainers = containers;
+            generateEDIContent(order, orderContainers);
+            document.getElementById('edi-modal').classList.remove('hidden');
+            closeContainerModal();
+            await fetchOrders();
+        }
+
+        function generateEDIContent(order, orderContainers) {
+            const format = document.getElementById('edi-format').value;
+            let content = '';
+            if (format === 'XML') {
+                content = generateXML(order, orderContainers);
+            } else {
+                content = generateEDIFACT(order, orderContainers);
+            }
+            document.getElementById('edi-content').value = content;
+        }
+
+        function generateXML(order, containers) {
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Message>
+    <Header>
+        <MessageType>CARGO_MANIFEST</MessageType>
+        <MessageDate>${new Date().toISOString()}</MessageDate>
+        <OrderNo>${order.orderNo}</OrderNo>
+    </Header>
+    <ShipmentDetails>
+        <Customer>${order.customer}</Customer>
+        <Port>${order.port}</Port>
+        <ETA>${order.eta || 'N/A'}</ETA>
+        <Vessel>${order.vessel || 'N/A'}</Vessel>
+        <Voyage>${order.voyage || 'N/A'}</Voyage>
+        <Remarks>${order.remarks || ''}</Remarks>
+    </ShipmentDetails>
+    <Containers>
+${containers.map(c => `        <Container>
+            <ContainerNo>${c.containerNo}</ContainerNo>
+            <SealNo>${c.sealNo || ''}</SealNo>
+            <Weight>${c.weight || 0}</Weight>
+            <CargoType>${c.cargoType || ''}</CargoType>
+        </Container>`).join('\n')}
+    </Containers>
+</EDI_Message>`;
+        }
+
+        function generateEDIFACT(order, containers) {
+            const timestamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 14);
+            let edifact = `UNB+UNOC:3+SENDER+RECEIVER+${timestamp}+1'\n`;
+            edifact += `UNH+1+CODECO:D:95B:UN'\n`;
+            edifact += `BGM+11+${order.orderNo}+9'\n`;
+            edifact += `DTM+137:${timestamp}:203'\n`;
+            edifact += `NAD+CA+${order.customer}'\n`;
+            edifact += `LOC+5+${order.port}'\n`;
+            if (order.eta) {
+                const etaFormatted = new Date(order.eta).toISOString().replace(/[-:]/g, '').slice(0, 14);
+                edifact += `DTM+132:${etaFormatted}:203'\n`;
+            }
+            containers.forEach((container) => {
+                edifact += `EQD+CN+${container.containerNo}+22G1'\n`;
+                if (container.sealNo) {
+                    edifact += `SEL+${container.sealNo}'\n`;
+                }
+                if (container.weight) {
+                    edifact += `MEA+AAE+G+KGM:${container.weight}'\n`;
+                }
+                if (container.cargoType) {
+                    edifact += `FTX+AAA+++${container.cargoType}'\n`;
+                }
+            });
+            edifact += `UNT+${containers.length + 6}+1'\n`;
+            edifact += `UNZ+1+1'\n`;
+            return edifact;
+        }
+
+        function closeEDIModal() {
+            document.getElementById('edi-modal').classList.add('hidden');
+            // Reset selection after EDI modal is closed
+            currentOrderId = null;
+        }
+
+        function getRandomStatus() {
+            const statuses = ['Accepted', 'Pending', 'Rejected'];
+            const weights = [0.6, 0.3, 0.1];
+            const rand = Math.random();
+            let sum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                sum += weights[i];
+                if (rand <= sum) return statuses[i];
+            }
+            return statuses[0];
+        }
+
+        function getRandomNote() {
+            const notes = {
+                'Accepted': ['Thành công', 'Dữ liệu hợp lệ', 'Đã xử lý'],
+                'Pending': ['Đang xử lý', 'Chờ phê duyệt', 'Đang kiểm tra'],
+                'Rejected': ['Thiếu thông tin hải quan', 'Dữ liệu không hợp lệ', 'Lỗi format']
+            };
+            const allNotes = [...notes.Accepted, ...notes.Pending, ...notes.Rejected];
+            return allNotes[Math.floor(Math.random() * allNotes.length)];
+        }
+
+        async function sendEDI() {
+            const order = orders.find(o => o.id === currentOrderId);
+            if (!order) return;
+            const ediContent = document.getElementById('edi-content').value;
+            const ediFormat = document.getElementById('edi-format').value;
+            const payload = {
+                orderId: order.id,
+                fileContent: ediContent,
+                format: ediFormat,
+                status: getRandomStatus(),
+                responseTime: Math.random() > 0.3 ? new Date(Date.now() + Math.random() * 3600000).toISOString() : null,
+                note: getRandomNote()
+            };
+            const res = await fetch(`${API_BASE}/api/edi/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                alert('Gửi EDI thất bại');
+                return;
+            }
+            closeEDIModal();
+            await fetchOrders();
+            showSuccessModal(`EDI đã được gửi thành công cho Order ${order.orderNo}! Kiểm tra Dashboard để theo dõi trạng thái.`);
+        }
+
+        function deleteOrderConfirm(orderId) {
+            return confirm('Xác nhận xóa order này? Tất cả containers liên quan cũng sẽ bị xóa.');
+        }
+
+        async function deleteOrder(orderId) {
+            if (!deleteOrderConfirm(orderId)) return;
+            const res = await fetch(`${API_BASE}/api/orders/${orderId}`, { method: 'DELETE' });
+            if (!res.ok) {
+                alert('Xóa order thất bại');
+                return;
+            }
+            await fetchOrders();
+            showSuccessModal('Order đã được xóa thành công!');
+        }
+
+        function showSuccessModal(message) {
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('order-form').addEventListener('submit', addOrder);
+        document.getElementById('container-form').addEventListener('submit', addContainer);
+
+        // EDI format change handler
+        document.getElementById('edi-format').addEventListener('change', function() {
+            if (currentOrderId) {
+                const order = orders.find(o => o.id === currentOrderId);
+                const orderContainers = containers;
+                generateEDIContent(order, orderContainers);
+            }
+        });
+
+        // Close modals when clicking outside
+        document.getElementById('success-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeSuccessModal();
+        });
+        document.getElementById('container-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeContainerModal();
+        });
+        document.getElementById('edi-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeEDIModal();
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchOrders().catch(() => alert('Không tải được dữ liệu Orders. Hãy đảm bảo backend đang chạy.'));
+        });
+    </script>
+</body>
+</html>

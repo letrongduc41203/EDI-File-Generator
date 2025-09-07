@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Message>
+    <Header>
+        <MessageType>CARGO_MANIFEST</MessageType>
+        <MessageDate>2025-09-07T18:41:47.197Z</MessageDate>
+        <OrderNo>ORD003</OrderNo>
+    </Header>
+    <ShipmentDetails>
+        <Customer>Jackson</Customer>
+        <Port>VNDAD</Port>
+        <ETA>2025-09-21T18:40:00.000Z</ETA>
+        <Vessel>MSC PPO</Vessel>
+        <Voyage>2022-2-5</Voyage>
+        <Remarks>TING</Remarks>
+    </ShipmentDetails>
+    <Containers>
+        <Container>
+            <ContainerNo>LQW11</ContainerNo>
+            <SealNo>SL0012</SealNo>
+            <Weight>1213</Weight>
+            <CargoType>OOG</CargoType>
+        </Container>
+        <Container>
+            <ContainerNo>MKS1231</ContainerNo>
+            <SealNo>SL2322</SealNo>
+            <Weight>1200</Weight>
+            <CargoType>HAZMAT</CargoType>
+        </Container>
+    </Containers>
+</EDI_Message>

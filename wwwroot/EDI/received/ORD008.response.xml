@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Response>
+  <OrderNo>ORD008</OrderNo>
+  <Status>Accepted</Status>
+  <ProcessedAt>2025-09-07T19:12:12.037Z</ProcessedAt>
+</EDI_Response>

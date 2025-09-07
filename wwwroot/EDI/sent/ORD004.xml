@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Message>
+    <Header>
+        <MessageType>CARGO_MANIFEST</MessageType>
+        <MessageDate>2025-09-07T18:54:17.074Z</MessageDate>
+        <OrderNo>ORD004</OrderNo>
+    </Header>
+    <ShipmentDetails>
+        <Customer>ANHSANG</Customer>
+        <Port>VNDAD</Port>
+        <ETA>2025-09-06T18:50:00.000Z</ETA>
+        <Vessel>POP QRT</Vessel>
+        <Voyage>2025-23-5</Voyage>
+        <Remarks></Remarks>
+    </ShipmentDetails>
+    <Containers>
+        <Container>
+            <ContainerNo>SKY451</ContainerNo>
+            <SealNo>SQ1235</SealNo>
+            <Weight>910</Weight>
+            <CargoType>REEFER</CargoType>
+        </Container>
+    </Containers>
+</EDI_Message>

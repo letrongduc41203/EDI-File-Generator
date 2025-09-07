@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Message>
+    <Header>
+        <MessageType>CARGO_MANIFEST</MessageType>
+        <MessageDate>2025-09-07T18:38:24.381Z</MessageDate>
+        <OrderNo>ORD002</OrderNo>
+    </Header>
+    <ShipmentDetails>
+        <Customer>ThanhTung</Customer>
+        <Port>VNSGN</Port>
+        <ETA>2025-10-07T18:36:00.000Z</ETA>
+        <Vessel>MSC Mtp</Vessel>
+        <Voyage>2025-1-15</Voyage>
+        <Remarks>i know</Remarks>
+    </ShipmentDetails>
+    <Containers>
+        <Container>
+            <ContainerNo>ÀG</ContainerNo>
+            <SealNo>SN1102</SealNo>
+            <Weight>1200</Weight>
+            <CargoType>OOG</CargoType>
+        </Container>
+        <Container>
+            <ContainerNo>MVP412</ContainerNo>
+            <SealNo>SN123</SealNo>
+            <Weight>1100</Weight>
+            <CargoType>TANK</CargoType>
+        </Container>
+    </Containers>
+</EDI_Message>

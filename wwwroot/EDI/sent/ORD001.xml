@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EDI_Message>
+    <Header>
+        <MessageType>CARGO_MANIFEST</MessageType>
+        <MessageDate>2025-09-07T18:13:40.438Z</MessageDate>
+        <OrderNo>ORD001</OrderNo>
+    </Header>
+    <ShipmentDetails>
+        <Customer>LYHAN</Customer>
+        <Port>VNHPH</Port>
+        <ETA>2025-09-12T18:04:00.000Z</ETA>
+        <Vessel>MSC MVP</Vessel>
+        <Voyage>2026-12-12</Voyage>
+        <Remarks>1231313</Remarks>
+    </ShipmentDetails>
+    <Containers>
+        <Container>
+            <ContainerNo>MVP412</ContainerNo>
+            <SealNo>SN123</SealNo>
+            <Weight>121120</Weight>
+            <CargoType>REEFER</CargoType>
+        </Container>
+    </Containers>
+</EDI_Message>
